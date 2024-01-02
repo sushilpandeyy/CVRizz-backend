@@ -1,26 +1,25 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
+app.use(cors());
+
 const PORT = 3000;
 
 
 const url = 'mongodb://127.0.0.1:27017';
-const client = new MongoClient(url);
 const dbName = 'CVmaker';
-let db;
 
-async function main() {
-   
-    await client.connect();
-    console.log('Connected successfully to server');
-    db = client.db(dbName); 
-    startServer(); 
-}
+mongoose.connect(`${url}/${dbName}`).then(() => {
+    console.log('MongoDB Connected');
+    app.listen(PORT,() => console.log(`Server is running on http://localhost:${PORT}`))
+})
+.catch(err => console.log(err));   
 
+const db = mongoose.connection;
 
 app.use(bodyParser.json());
 
@@ -28,6 +27,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const User = require('./models/User');
 
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
 
 app.post('/users', async (req, res) => {
     try {
@@ -44,11 +46,3 @@ app.post('/users', async (req, res) => {
 });
 
 
-function startServer() {
-    app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
-    });
-}
-
-
-main();
