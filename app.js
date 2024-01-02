@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const User = require('./models/User');
 
-app.get('/', (req, res) => {
+app.get('/new', (req, res) => {
     res.send('Hello World!');
 });
 
