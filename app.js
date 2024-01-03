@@ -8,7 +8,6 @@ app.use(cors());
 
 const PORT = 3000;
 
-
 const url = 'mongodb://127.0.0.1:27017';
 const dbName = 'CVmaker';
 
@@ -16,7 +15,7 @@ mongoose.connect(`${url}/${dbName}`).then(() => {
     console.log('MongoDB Connected');
     app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`))
 })
-    .catch(err => console.log(err));
+.catch(err => console.log(err));
 
 const db = mongoose.connection;
 
@@ -25,26 +24,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const User = require('./models/User');
 
-app.get('/new', async (req, res) => {
-    const data = await User.find({ password: "8052202123" });
-    res.json(data);
-    console.log(data);
-    if (data.password === "8052202123") {
-        console.log("success");
-    }
+// Route for the Landing page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+  });
 
+app.get('/signin', async (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'signin.html'));
 });
-//update
-app.put('/update', async (req, res) => {
-    console.log(req.body);
-    await User.updateOne({ _id: req.body.id }, { username: "manmohan" });
-    res.send({ success: true, message: "data updated" });
+
+app.get('/signup', async (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
+
 app.post('/login', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
-        console.log(username,email, password);
-        const data = await User.find({ email: email, password: password });
+        const { username, password } = req.body;
+        console.log(username, password);
+        const data = await User.find({ username: username, password: password });
         if (data.length === 0) {
             res.status(401).send('Invalid credentials');
         }else{      
@@ -55,10 +52,9 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).send('Internal Server Error');
-
-
     }
 });
+
 app.post('/users', async (req, res) => {
     try {
         const { username, email, password } = req.body;
