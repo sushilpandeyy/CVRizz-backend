@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const User = require('./models/User');
+const Template = require('./models/template');
 
 // Route for the Landing page
 app.get('/', (req, res) => {
@@ -64,6 +65,17 @@ app.post('/users', async (req, res) => {
         await collection.insertOne({ username, email, password }); // Use await for async operations
         console.log('Inserted 1 document into the collection');
         res.status(201).json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/templates', async (req, res) => {
+    try {
+        const templates = await Template.find();
+        res.json(templates);
+        console.log(templates);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
